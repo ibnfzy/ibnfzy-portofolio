@@ -1,6 +1,11 @@
 <?php $editing = ! empty($profile); ?>
 
-<form method="post" enctype="multipart/form-data" hx-post="/admin/profile/update" hx-target="#admin-profile-form">
+<form
+    method="post"
+    enctype="multipart/form-data"
+    action="/admin/profile/update"
+    data-ajax-target="#admin-profile-form"
+>
     <?= csrf_field() ?>
 
     <div>
@@ -57,6 +62,6 @@
 
     <div class="mt-4 flex gap-2">
         <button type="submit" class="px-3 py-1 bg-blue-600 text-white rounded">Save</button>
-        <button type="button" hx-get="/admin" class="px-3 py-1 bg-gray-300 rounded">Back</button>
+        <a href="/admin" class="px-3 py-1 bg-gray-300 rounded inline-flex items-center justify-center">Back</a>
     </div>
 </form>

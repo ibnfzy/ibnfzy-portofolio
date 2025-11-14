@@ -15,8 +15,19 @@
                     <td class="px-4 py-2"><?= esc($a['title']) ?></td>
                     <td class="px-4 py-2"><?= $a['is_published'] ? 'Yes' : 'No' ?></td>
                     <td class="px-4 py-2">
-                        <button hx-get="/admin/articles/edit/<?= $a['id'] ?>" hx-target="#modal" hx-swap="modal" class="px-2 py-1 bg-blue-600 text-white rounded">Edit</button>
-                        <button hx-delete="/admin/articles/delete/<?= $a['id'] ?>" hx-confirm="Are you sure?" hx-target="#admin-articles-list" class="px-2 py-1 bg-red-600 text-white rounded">Delete</button>
+                        <button
+                            type="button"
+                            class="px-2 py-1 bg-blue-600 text-white rounded"
+                            data-ajax-url="/admin/articles/edit/<?= $a['id'] ?>"
+                            data-ajax-target="#modal-content"
+                        >Edit</button>
+                        <button
+                            type="button"
+                            class="px-2 py-1 bg-red-600 text-white rounded"
+                            data-ajax-url="/admin/articles/delete/<?= $a['id'] ?>"
+                            data-ajax-target="#admin-articles-list"
+                            data-ajax-confirm="Are you sure?"
+                        >Delete</button>
                     </td>
                 </tr>
             <?php endforeach; ?>

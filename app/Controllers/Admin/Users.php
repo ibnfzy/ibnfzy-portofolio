@@ -21,8 +21,15 @@ class Users extends BaseAdmin
 
     public function create()
     {
-        // Return form fragment for HTMX modal
-        return view('admin/users/form', ['user' => null]);
+        $view = view('admin/users/form', ['user' => null]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#modal-content' => $view,
+            ]);
+        }
+
+        return $view;
     }
 
     public function store()
@@ -49,13 +56,14 @@ class Users extends BaseAdmin
         $this->userModel->insert($data);
         $this->session->setFlashdata('success', 'User created');
 
-        // If HTMX request, return updated list fragment + clear modal + OOB flash
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $data = ['users' => $this->userModel->findAll()];
-            $list = view('admin/users/list_fragment', $data);
-            $modalClear = '<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4" aria-hidden="true" role="dialog" hx-swap-oob="true"></div>';
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($list . $modalClear . $flash);
+
+            return $this->respondWithFragments([
+                '#admin-users-list' => view('admin/users/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+                '#modal-content' => '',
+            ]);
         }
 
         return redirect()->to('/admin/users');

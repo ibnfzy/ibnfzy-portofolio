@@ -11,7 +11,6 @@
 
     <?= view('partials/public_footer', isset($profile) ? ['profile' => $profile] : []) ?>
 
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.11.1"></script>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

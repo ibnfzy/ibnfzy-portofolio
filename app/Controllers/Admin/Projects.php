@@ -24,8 +24,15 @@ class Projects extends BaseAdmin
 
     public function create()
     {
-        // return form fragment for HTMX
-        return view('admin/projects/form', ['project' => null]);
+        $view = view('admin/projects/form', ['project' => null]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#modal-content' => $view,
+            ]);
+        }
+
+        return $view;
     }
 
     public function store()
@@ -55,13 +62,14 @@ class Projects extends BaseAdmin
             $this->handleUploadImages($id, $this->request->getFileMultiple('images'));
         }
 
-        // If HTMX request, return updated list fragment and clear modal via OOB swap
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $data = ['projects' => $this->projectModel->orderBy('created_at','DESC')->findAll()];
-            $list = view('admin/projects/list_fragment', $data);
-            $modalClear = '<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4" aria-hidden="true" role="dialog" hx-swap-oob="true"></div>';
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($list . $modalClear . $flash);
+
+            return $this->respondWithFragments([
+                '#admin-projects-list' => view('admin/projects/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+                '#modal-content' => '',
+            ]);
         }
 
         return redirect()->to('/admin/projects');
@@ -75,7 +83,16 @@ class Projects extends BaseAdmin
         }
 
         $project['images'] = $this->imageModel->where('project_id', $id)->orderBy('order_index','ASC')->findAll();
-        return view('admin/projects/form', ['project' => $project]);
+        $view = view('admin/projects/form', ['project' => $project]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#modal-content' => $view,
+                '#flash-container' => view('partials/flash'),
+            ]);
+        }
+
+        return $view;
     }
 
     public function update($id)
@@ -109,12 +126,14 @@ class Projects extends BaseAdmin
             $this->handleUploadImages($id, $this->request->getFileMultiple('images'));
         }
 
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $data = ['projects' => $this->projectModel->orderBy('created_at','DESC')->findAll()];
-            $list = view('admin/projects/list_fragment', $data);
-            $modalClear = '<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4" aria-hidden="true" role="dialog" hx-swap-oob="true"></div>';
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($list . $modalClear . $flash);
+
+            return $this->respondWithFragments([
+                '#admin-projects-list' => view('admin/projects/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+                '#modal-content' => '',
+            ]);
         }
 
         return redirect()->to('/admin/projects');
@@ -138,10 +157,13 @@ class Projects extends BaseAdmin
         $this->projectModel->delete($id);
         $this->session->setFlashdata('success', 'Project deleted');
 
-        // If HTMX request, return updated list fragment so page updates without redirect
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $data = ['projects' => $this->projectModel->orderBy('created_at','DESC')->findAll()];
-            return view('admin/projects/list_fragment', $data);
+
+            return $this->respondWithFragments([
+                '#admin-projects-list' => view('admin/projects/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+            ]);
         }
 
         return redirect()->to('/admin/projects');
@@ -177,6 +199,22 @@ class Projects extends BaseAdmin
         $this->imageModel->delete($id);
         $this->session->setFlashdata('success', 'Image deleted');
 
+        if ($this->isAjaxRequest()) {
+            $projectId = $img['project_id'];
+            $project = $this->projectModel->find($projectId);
+            if ($project) {
+                $project['images'] = $this->imageModel->where('project_id', $projectId)->orderBy('order_index','ASC')->findAll();
+                return $this->respondWithFragments([
+                    '#project-images-' . $projectId => view('admin/projects/images_fragment', ['project' => $project]),
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
+            return $this->respondWithFragments([
+                '#flash-container' => view('partials/flash'),
+            ]);
+        }
+
         return redirect()->back();
     }
 
@@ -191,6 +229,17 @@ class Projects extends BaseAdmin
         $order = $body['order'];
         foreach ($order as $idx => $imgId) {
             $this->imageModel->update((int)$imgId, ['order_index' => (int)$idx]);
+        }
+        if ($this->isAjaxRequest()) {
+            $project = $this->projectModel->find($projectId);
+            if ($project) {
+                $project['images'] = $this->imageModel->where('project_id', $projectId)->orderBy('order_index','ASC')->findAll();
+
+                return $this->respondWithFragments([
+                    '#project-images-' . $projectId => view('admin/projects/images_fragment', ['project' => $project]),
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
         }
 
         return $this->response->setJSON(['success' => true]);

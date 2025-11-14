@@ -5,7 +5,7 @@
     <header class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">Admin Dashboard</h1>
         <div>
-            <button class="px-3 py-1 bg-blue-600 text-white rounded" hx-get="/admin/stats" hx-target="#stats">Refresh stats (HTMX)</button>
+            <button type="button" class="px-3 py-1 bg-blue-600 text-white rounded" onclick="window.location.reload()">Refresh stats</button>
         </div>
     </header>
 
