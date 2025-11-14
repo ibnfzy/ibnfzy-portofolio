@@ -25,7 +25,16 @@ class Profile extends BaseAdmin
     {
         $userId = $this->session->get('admin_user_id') ?: 1;
         $profile = $this->profileModel->where('user_id', $userId)->first();
-        return view('admin/profile/form', ['profile' => $profile]);
+        $view = view('admin/profile/form', ['profile' => $profile]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#admin-profile-form' => $view,
+                '#flash-container' => view('partials/flash'),
+            ]);
+        }
+
+        return $view;
     }
 
     public function update()
@@ -79,12 +88,14 @@ class Profile extends BaseAdmin
             $this->session->setFlashdata('success', 'Profile created');
         }
 
-        // If HTMX request, return the form fragment and OOB flash so the page can update without full reload
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $fresh = $this->profileModel->where('user_id', $userId)->first();
             $form = view('admin/profile/form', ['profile' => $fresh]);
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($form . $flash);
+
+            return $this->respondWithFragments([
+                '#admin-profile-form' => $form,
+                '#flash-container' => view('partials/flash'),
+            ]);
         }
 
         return redirect()->to('/admin/profile');

@@ -56,4 +56,26 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = service('session');
     }
+
+    /**
+     * Determine whether the current request was triggered via AJAX.
+     */
+    protected function isAjaxRequest(): bool
+    {
+        return $this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+    }
+
+    /**
+     * Build a JSON response containing a set of HTML fragments keyed by CSS selectors.
+     *
+     * @param array<string, string> $fragments
+     */
+    protected function respondWithFragments(array $fragments, int $statusCode = 200): ResponseInterface
+    {
+        $payload = ['fragments' => $fragments];
+
+        return $this->response
+            ->setStatusCode($statusCode)
+            ->setJSON($payload);
+    }
 }

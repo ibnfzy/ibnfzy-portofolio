@@ -43,7 +43,7 @@ class PublicController extends BaseController
         return view('public/project_detail', $data);
     }
 
-    // HTMX endpoint to return a specific project image fragment
+    // Endpoint to return a specific project image fragment
     public function projectImage($projectId = null, $index = 0)
     {
         $imageModel = new \App\Models\ProjectImageModel();

@@ -7,8 +7,19 @@
                     <div class="text-sm text-gray-600">Slug: <?= esc($p['slug']) ?></div>
                 </div>
                 <div class="space-x-2">
-                    <button hx-get="/admin/projects/edit/<?= $p['id'] ?>" hx-target="#modal" hx-swap="modal" class="px-2 py-1 bg-blue-500 text-white rounded">Edit</button>
-                    <button hx-get="/admin/projects/delete/<?= $p['id'] ?>" hx-confirm="Are you sure?" hx-target="#admin-projects-list" class="px-2 py-1 bg-red-500 text-white rounded">Delete</button>
+                    <button
+                        type="button"
+                        class="px-2 py-1 bg-blue-500 text-white rounded"
+                        data-ajax-url="/admin/projects/edit/<?= $p['id'] ?>"
+                        data-ajax-target="#modal-content"
+                    >Edit</button>
+                    <button
+                        type="button"
+                        class="px-2 py-1 bg-red-500 text-white rounded"
+                        data-ajax-url="/admin/projects/delete/<?= $p['id'] ?>"
+                        data-ajax-target="#admin-projects-list"
+                        data-ajax-confirm="Are you sure?"
+                    >Delete</button>
                 </div>
             </div>
         <?php endforeach ?>

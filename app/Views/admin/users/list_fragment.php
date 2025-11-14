@@ -17,7 +17,12 @@
                 <td class="px-4 py-2"><?= esc($u['email']) ?></td>
                 <td class="px-4 py-2"><?= esc($u['role']) ?></td>
                 <td class="px-4 py-2">
-                    <button hx-get="/admin/users/edit/<?= $u['id'] ?>" hx-target="#modal-body" hx-trigger="click" class="px-2 py-1 bg-blue-600 text-white rounded" onclick="document.getElementById('modalContainer').classList.remove('hidden')">Edit</button>
+                    <button
+                        type="button"
+                        class="px-2 py-1 bg-blue-600 text-white rounded"
+                        data-ajax-url="/admin/users/edit/<?= $u['id'] ?>"
+                        data-ajax-target="#modal-content"
+                    >Edit</button>
                     <a href="/admin/users/delete/<?= $u['id'] ?>" class="px-2 py-1 bg-red-600 text-white rounded" onclick="return confirm('Delete user?')">Delete</a>
                 </td>
             </tr>

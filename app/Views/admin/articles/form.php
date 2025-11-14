@@ -7,12 +7,8 @@
             method="post"
             enctype="multipart/form-data"
             class="space-y-4"
-            <?php if ($editing): ?>
-                hx-post="/admin/articles/update/<?= $article['id'] ?>"
-            <?php else: ?>
-                hx-post="/admin/articles/store"
-            <?php endif; ?>
-            hx-target="#admin-articles-list"
+            action="<?= $editing ? '/admin/articles/update/'.$article['id'] : '/admin/articles/store' ?>"
+            data-ajax-target="#admin-articles-list"
         >
             <?= csrf_field() ?>
 
@@ -38,7 +34,7 @@
 
             <div class="flex items-center gap-2">
                 <button type="submit" class="px-3 py-1 bg-blue-600 text-white rounded">Save</button>
-                <button type="button" onclick="closeModal()" class="px-3 py-1 bg-gray-300 rounded">Cancel</button>
+                <button type="button" class="px-3 py-1 bg-gray-300 rounded" data-modal-close>Cancel</button>
             </div>
         </form>
     </div>

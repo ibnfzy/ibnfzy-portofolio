@@ -24,7 +24,15 @@ class Articles extends BaseAdmin
 
     public function create()
     {
-        return view('admin/articles/form', ['article' => null]);
+        $view = view('admin/articles/form', ['article' => null]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#modal-content' => $view,
+            ]);
+        }
+
+        return $view;
     }
 
     public function store()
@@ -52,12 +60,14 @@ class Articles extends BaseAdmin
             $this->handleUploadImages($id, $this->request->getFileMultiple('images'));
         }
 
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $data = ['articles' => $this->articleModel->orderBy('published_at','DESC')->findAll()];
-            $list = view('admin/articles/list_fragment', $data);
-            $modalClear = '<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4" aria-hidden="true" role="dialog" hx-swap-oob="true"></div>';
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($list . $modalClear . $flash);
+
+            return $this->respondWithFragments([
+                '#admin-articles-list' => view('admin/articles/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+                '#modal-content' => '',
+            ]);
         }
 
         return redirect()->to('/admin/articles');
@@ -68,7 +78,16 @@ class Articles extends BaseAdmin
         $article = $this->articleModel->find($id);
         if (! $article) throw new \CodeIgniter\Exceptions\PageNotFoundException('Article not found');
         $article['images'] = $this->imageModel->where('article_id', $id)->orderBy('order_index','ASC')->findAll();
-        return view('admin/articles/form', ['article' => $article]);
+        $view = view('admin/articles/form', ['article' => $article]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#modal-content' => $view,
+                '#flash-container' => view('partials/flash'),
+            ]);
+        }
+
+        return $view;
     }
 
     public function update($id)
@@ -99,12 +118,14 @@ class Articles extends BaseAdmin
             $this->handleUploadImages($id, $this->request->getFileMultiple('images'));
         }
 
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $data = ['articles' => $this->articleModel->orderBy('published_at','DESC')->findAll()];
-            $list = view('admin/articles/list_fragment', $data);
-            $modalClear = '<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4" aria-hidden="true" role="dialog" hx-swap-oob="true"></div>';
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($list . $modalClear . $flash);
+
+            return $this->respondWithFragments([
+                '#admin-articles-list' => view('admin/articles/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+                '#modal-content' => '',
+            ]);
         }
 
         return redirect()->to('/admin/articles');
@@ -124,10 +145,16 @@ class Articles extends BaseAdmin
         $this->imageModel->where('article_id', $id)->delete();
         $this->articleModel->delete($id);
         $this->session->setFlashdata('success', 'Article deleted');
-        if ($this->request->isAJAX()) {
+
+        if ($this->isAjaxRequest()) {
             $articles = $this->articleModel->orderBy('created_at', 'DESC')->findAll();
-            return view('admin/articles/list_fragment', ['articles' => $articles]);
+
+            return $this->respondWithFragments([
+                '#admin-articles-list' => view('admin/articles/list_fragment', ['articles' => $articles]),
+                '#flash-container' => view('partials/flash'),
+            ]);
         }
+
         return redirect()->to('/admin/articles');
     }
 
@@ -159,16 +186,24 @@ class Articles extends BaseAdmin
         return redirect()->back();
     }
 
-    // HTMX-friendly: return images fragment for an article
+    // Return images fragment for an article
     public function images($articleId = null)
     {
         if (! $articleId) return '';
         $images = $this->imageModel->where('article_id', $articleId)->orderBy('order_index','ASC')->findAll();
         $article = $this->articleModel->find($articleId);
-        return view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]);
+        $view = view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]);
+
+        if ($this->isAjaxRequest()) {
+            return $this->respondWithFragments([
+                '#article-images' => $view,
+            ]);
+        }
+
+        return $view;
     }
 
-    // Delete image by article/id route (used by images_fragment hx-delete)
+    // Delete image by article/id route
     public function imageDelete($articleId = null, $imageId = null)
     {
         if (! $imageId) return $this->response->setStatusCode(400);
@@ -180,10 +215,14 @@ class Articles extends BaseAdmin
 
         $this->session->setFlashdata('success', 'Image deleted');
 
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $images = $this->imageModel->where('article_id', $articleId)->orderBy('order_index','ASC')->findAll();
             $article = $this->articleModel->find($articleId);
-            return view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]);
+
+            return $this->respondWithFragments([
+                '#article-images' => view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]),
+                '#flash-container' => view('partials/flash'),
+            ]);
         }
 
         return redirect()->back();
@@ -198,12 +237,14 @@ class Articles extends BaseAdmin
             $this->handleUploadImages($articleId, $files);
         }
 
-        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+        if ($this->isAjaxRequest()) {
             $images = $this->imageModel->where('article_id', $articleId)->orderBy('order_index','ASC')->findAll();
             $article = $this->articleModel->find($articleId);
-            $frag = view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]);
-            $flash = view('partials/flash_oob');
-            return $this->response->setBody($frag . $flash);
+
+            return $this->respondWithFragments([
+                '#article-images' => view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]),
+                '#flash-container' => view('partials/flash'),
+            ]);
         }
 
         return redirect()->back();
@@ -219,6 +260,16 @@ class Articles extends BaseAdmin
         foreach ($order as $idx => $imgId) {
             $this->imageModel->update((int)$imgId, ['order_index' => (int)$idx]);
         }
+        if ($this->isAjaxRequest()) {
+            $images = $this->imageModel->where('article_id', $articleId)->orderBy('order_index','ASC')->findAll();
+            $article = $this->articleModel->find($articleId);
+
+            return $this->respondWithFragments([
+                '#article-images' => view('admin/articles/images_fragment', ['images' => $images, 'article' => $article]),
+                '#flash-container' => view('partials/flash'),
+            ]);
+        }
+
         return $this->response->setJSON(['success' => true]);
     }
 }
