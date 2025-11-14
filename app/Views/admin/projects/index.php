@@ -11,6 +11,4 @@
 
 <?= $this->include('admin/projects/list_fragment') ?>
 
-<!-- modal target -->
-<div id="modal"></div>
 <?= $this->endSection() ?>

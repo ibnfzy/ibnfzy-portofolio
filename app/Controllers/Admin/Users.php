@@ -53,7 +53,7 @@ class Users extends BaseAdmin
         if ($this->request->getHeaderLine('HX-Request') === 'true') {
             $data = ['users' => $this->userModel->findAll()];
             $list = view('admin/users/list_fragment', $data);
-            $modalClear = '<div id="modal" hx-swap-oob="true"></div>';
+            $modalClear = '<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4" aria-hidden="true" role="dialog" hx-swap-oob="true"></div>';
             $flash = view('partials/flash_oob');
             return $this->response->setBody($list . $modalClear . $flash);
         }

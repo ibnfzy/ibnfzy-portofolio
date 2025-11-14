@@ -1,8 +1,9 @@
 <?php /** @var array|null $user */ ?>
 <?php $editing = ! empty($user); ?>
 
-<div class="bg-white p-4 rounded shadow max-w-md">
-    <form method="post" hx-post="/admin/users/store" hx-target="#admin-users-list" class="space-y-3">
+<div class="w-full max-w-md" onclick="event.stopPropagation();">
+    <div class="bg-white p-4 rounded shadow">
+        <form method="post" hx-post="/admin/users/store" hx-target="#admin-users-list" class="space-y-3">
         <?= csrf_field() ?>
 
         <div>
@@ -28,9 +29,10 @@
             </select>
         </div>
 
-        <div class="flex items-center gap-2">
-            <button type="submit" class="px-3 py-1 bg-blue-600 text-white rounded">Save</button>
-            <button type="button" onclick="document.getElementById('modal').innerHTML = ''" class="px-3 py-1 bg-gray-200 rounded">Cancel</button>
-        </div>
-    </form>
+            <div class="flex items-center gap-2">
+                <button type="submit" class="px-3 py-1 bg-blue-600 text-white rounded">Save</button>
+                <button type="button" onclick="closeModal()" class="px-3 py-1 bg-gray-200 rounded">Cancel</button>
+            </div>
+        </form>
+    </div>
 </div>
