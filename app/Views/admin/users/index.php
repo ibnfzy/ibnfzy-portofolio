@@ -12,6 +12,4 @@
 <div class="bg-[var(--color-surface)] brutal-border border-[var(--color-stroke)] rounded-brutal p-4">
     <?= $this->include('admin/users/list_fragment', ['users' => $users]) ?>
 </div>
-<!-- modal target -->
-<div id="modal"></div>
 <?= $this->endSection() ?>

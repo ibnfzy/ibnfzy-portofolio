@@ -11,5 +11,4 @@
 
 <?= $this->include('admin/articles/list_fragment') ?>
 
-<div id="modal"></div>
 <?= $this->endSection() ?>
