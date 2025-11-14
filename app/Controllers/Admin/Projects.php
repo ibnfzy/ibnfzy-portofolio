@@ -137,6 +137,13 @@ class Projects extends BaseAdmin
         $this->imageModel->where('project_id', $id)->delete();
         $this->projectModel->delete($id);
         $this->session->setFlashdata('success', 'Project deleted');
+
+        // If HTMX request, return updated list fragment so page updates without redirect
+        if ($this->request->getHeaderLine('HX-Request') === 'true') {
+            $data = ['projects' => $this->projectModel->orderBy('created_at','DESC')->findAll()];
+            return view('admin/projects/list_fragment', $data);
+        }
+
         return redirect()->to('/admin/projects');
     }
 

@@ -18,6 +18,11 @@
         </div>
     </div>
 
+</div>
+
+    <!-- global modal target for HTMX -->
+    <div id="modal"></div>
+
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.11.1"></script>
 </body>
