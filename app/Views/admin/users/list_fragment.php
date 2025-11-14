@@ -17,7 +17,7 @@
                 <td class="px-4 py-2"><?= esc($u['email']) ?></td>
                 <td class="px-4 py-2"><?= esc($u['role']) ?></td>
                 <td class="px-4 py-2">
-                    <button hx-get="/admin/users/edit/<?= $u['id'] ?>" hx-target="#modal" hx-swap="outerHTML" class="px-2 py-1 bg-blue-600 text-white rounded">Edit</button>
+                    <button hx-get="/admin/users/edit/<?= $u['id'] ?>" hx-target="#modal" hx-swap="modal" class="px-2 py-1 bg-blue-600 text-white rounded">Edit</button>
                     <a href="/admin/users/delete/<?= $u['id'] ?>" class="px-2 py-1 bg-red-600 text-white rounded" onclick="return confirm('Delete user?')">Delete</a>
                 </td>
             </tr>
