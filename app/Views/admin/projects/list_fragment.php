@@ -7,7 +7,7 @@
                     <div class="text-sm text-gray-600">Slug: <?= esc($p['slug']) ?></div>
                 </div>
                 <div class="space-x-2">
-                    <button hx-get="/admin/projects/edit/<?= $p['id'] ?>" hx-target="#modal" class="px-2 py-1 bg-blue-500 text-white rounded">Edit</button>
+                    <button hx-get="/admin/projects/edit/<?= $p['id'] ?>" hx-target="#modal" hx-swap="outerHTML" class="px-2 py-1 bg-blue-500 text-white rounded">Edit</button>
                     <button hx-get="/admin/projects/delete/<?= $p['id'] ?>" hx-confirm="Are you sure?" hx-target="#admin-projects-list" class="px-2 py-1 bg-red-500 text-white rounded">Delete</button>
                 </div>
             </div>
