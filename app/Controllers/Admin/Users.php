@@ -21,12 +21,15 @@ class Users extends BaseAdmin
 
     public function create()
     {
-        $view = view('admin/users/form', ['user' => null]);
+        // Return form fragment for modal or full-page
+        return view('admin/users/form', ['user' => null]);
+    }
 
-        if ($this->isAjaxRequest()) {
-            return $this->respondWithFragments([
-                '#modal-content' => $view,
-            ]);
+    public function edit($id)
+    {
+        $user = $this->userModel->find($id);
+        if (! $user) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('User not found');
         }
 
         return $view;
