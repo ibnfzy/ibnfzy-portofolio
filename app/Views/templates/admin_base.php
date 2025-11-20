@@ -21,7 +21,7 @@
     <div
         id="modal"
         data-modal
-        class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden"
+        class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden z-50"
         aria-hidden="true"
     >
         <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl relative" role="dialog">
