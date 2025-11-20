@@ -24,7 +24,7 @@
         class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden z-50"
         aria-hidden="true"
     >
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl relative" role="dialog">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl relative max-h-[90vh] flex flex-col overflow-hidden" role="dialog">
             <button
                 type="button"
                 class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
@@ -33,7 +33,7 @@
             >
                 ✕
             </button>
-            <div data-modal-content class="p-4"></div>
+            <div data-modal-content class="p-4 overflow-y-auto"></div>
         </div>
     </div>
 
