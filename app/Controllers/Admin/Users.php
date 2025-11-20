@@ -32,7 +32,8 @@ class Users extends BaseAdmin
             throw new \CodeIgniter\Exceptions\PageNotFoundException('User not found');
         }
 
-        return $view;
+        // Return the same form fragment populated for editing
+        return view('admin/users/form', ['user' => $user]);
     }
 
     public function store()
@@ -58,15 +59,27 @@ class Users extends BaseAdmin
 
         $this->userModel->insert($data);
         $this->session->setFlashdata('success', 'User created');
-
-        if ($this->isAjaxRequest()) {
+        if ($this->request->isAJAX()) {
             $data = ['users' => $this->userModel->findAll()];
+            return $this->response->setBody(view('admin/users/list_fragment', $data));
+        }
 
-            return $this->respondWithFragments([
-                '#admin-users-list' => view('admin/users/list_fragment', $data),
-                '#flash-container' => view('partials/flash'),
-                '#modal-content' => '',
-            ]);
+        return redirect()->to('/admin/users');
+    }
+
+    public function delete($id)
+    {
+        $user = $this->userModel->find($id);
+        if (! $user) {
+            return redirect()->to('/admin/users');
+        }
+
+        $this->userModel->delete($id);
+        $this->session->setFlashdata('success', 'User deleted');
+
+        if ($this->request->isAJAX()) {
+            $data = ['users' => $this->userModel->findAll()];
+            return $this->response->setBody(view('admin/users/list_fragment', $data));
         }
 
         return redirect()->to('/admin/users');

@@ -43,6 +43,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
 	$routes->get('users', 'Users::index');
 	$routes->get('users/create', 'Users::create');
 	$routes->post('users/store', 'Users::store');
+	$routes->get('users/edit/(:num)', 'Users::edit/$1');
+	$routes->get('users/delete/(:num)', 'Users::delete/$1');
+	$routes->delete('users/delete/(:num)', 'Users::delete/$1');
 });
 
 // Keep the default Home route as a fallback
