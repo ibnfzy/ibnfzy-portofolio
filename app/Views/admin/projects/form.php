@@ -1,7 +1,7 @@
 <?php $isEdit = ! empty($project); ?>
 <?php $errors = $errors ?? session('errors') ?? []; ?>
 <?php $formData = $formData ?? []; ?>
-<div class="w-full max-w-2xl" onclick="event.stopPropagation();">
+<div class="w-full max-w-2xl">
     <div class="brutal-card p-6 bg-white space-y-4">
         <div class="flex items-start justify-between">
             <div>

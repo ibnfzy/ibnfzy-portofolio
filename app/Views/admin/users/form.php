@@ -3,7 +3,7 @@
 <?php $errors = $errors ?? session('errors') ?? []; ?>
 <?php $formData = $formData ?? []; ?>
 
-<div class="w-full max-w-md" onclick="event.stopPropagation();">
+<div class="w-full max-w-md">
     <div class="brutal-card p-6 bg-white space-y-4">
         <div class="flex items-start justify-between">
             <div>
