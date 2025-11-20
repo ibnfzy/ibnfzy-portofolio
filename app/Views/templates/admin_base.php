@@ -3,13 +3,13 @@
 <?= $this->include('partials/public_head') ?>
 
 <body class="bg-[var(--color-bg)] text-[var(--color-primary)] antialiased">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex brutal-grid-bg relative overflow-hidden">
         <!-- Sidebar -->
-        <aside class="w-64">
+        <aside class="w-72 bg-[var(--color-surface)] brutal-border border-[var(--color-stroke)]">
             <?= $this->include('partials/admin_nav') ?>
         </aside>
 
-        <div class="flex-1 p-6">
+        <div class="flex-1 p-8 space-y-6 relative z-10">
             <div id="flash-container">
                 <?= $this->include('partials/flash') ?>
             </div>

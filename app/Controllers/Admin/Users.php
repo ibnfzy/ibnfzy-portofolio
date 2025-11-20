@@ -45,6 +45,19 @@ class Users extends BaseAdmin
         ];
 
         if (! $this->validate($rules)) {
+            if ($this->isAjaxRequest()) {
+                $view = view('admin/users/form', [
+                    'user' => null,
+                    'errors' => $this->validator->getErrors(),
+                    'formData' => $this->request->getPost(),
+                ]);
+
+                return $this->respondWithFragments([
+                    '#modal-content' => $view,
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -59,9 +72,14 @@ class Users extends BaseAdmin
 
         $this->userModel->insert($data);
         $this->session->setFlashdata('success', 'User created');
-        if ($this->request->isAJAX()) {
+        if ($this->isAjaxRequest()) {
             $data = ['users' => $this->userModel->findAll()];
-            return $this->response->setBody(view('admin/users/list_fragment', $data));
+
+            return $this->respondWithFragments([
+                '#admin-users-list' => view('admin/users/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+                '#modal-content' => '',
+            ]);
         }
 
         return redirect()->to('/admin/users');
@@ -77,9 +95,13 @@ class Users extends BaseAdmin
         $this->userModel->delete($id);
         $this->session->setFlashdata('success', 'User deleted');
 
-        if ($this->request->isAJAX()) {
+        if ($this->isAjaxRequest()) {
             $data = ['users' => $this->userModel->findAll()];
-            return $this->response->setBody(view('admin/users/list_fragment', $data));
+
+            return $this->respondWithFragments([
+                '#admin-users-list' => view('admin/users/list_fragment', $data),
+                '#flash-container' => view('partials/flash'),
+            ]);
         }
 
         return redirect()->to('/admin/users');

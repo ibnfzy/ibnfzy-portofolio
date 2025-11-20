@@ -43,6 +43,19 @@ class Projects extends BaseAdmin
         ];
 
         if (! $this->validate($rules)) {
+            if ($this->isAjaxRequest()) {
+                $view = view('admin/projects/form', [
+                    'project' => null,
+                    'errors' => $this->validator->getErrors(),
+                    'formData' => $this->request->getPost(),
+                ]);
+
+                return $this->respondWithFragments([
+                    '#modal-content' => $view,
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -107,6 +120,20 @@ class Projects extends BaseAdmin
             'slug' => 'required|alpha_dash|min_length[3]|max_length[255]'
         ];
         if (! $this->validate($rules)) {
+            if ($this->isAjaxRequest()) {
+                $project['images'] = $this->imageModel->where('project_id', $id)->orderBy('order_index','ASC')->findAll();
+
+                $view = view('admin/projects/form', [
+                    'project' => array_merge($project, $this->request->getPost()),
+                    'errors' => $this->validator->getErrors(),
+                ]);
+
+                return $this->respondWithFragments([
+                    '#modal-content' => $view,
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
