@@ -46,6 +46,18 @@ class Profile extends BaseAdmin
             'full_name' => 'required|min_length[3]|max_length[255]'
         ];
         if (! $this->validate($rules)) {
+            if ($this->isAjaxRequest()) {
+                $view = view('admin/profile/form', [
+                    'profile' => array_merge($profile ?? [], $this->request->getPost()),
+                    'errors' => $this->validator->getErrors(),
+                ]);
+
+                return $this->respondWithFragments([
+                    '#admin-profile-form' => $view,
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 

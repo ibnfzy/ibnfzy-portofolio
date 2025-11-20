@@ -42,6 +42,19 @@ class Articles extends BaseAdmin
             'slug' => 'required|alpha_dash|min_length[3]|max_length[255]'
         ];
         if (! $this->validate($rules)) {
+            if ($this->isAjaxRequest()) {
+                $view = view('admin/articles/form', [
+                    'article' => null,
+                    'errors' => $this->validator->getErrors(),
+                    'formData' => $this->request->getPost(),
+                ]);
+
+                return $this->respondWithFragments([
+                    '#modal-content' => $view,
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -100,6 +113,19 @@ class Articles extends BaseAdmin
             'slug' => 'required|alpha_dash|min_length[3]|max_length[255]'
         ];
         if (! $this->validate($rules)) {
+            if ($this->isAjaxRequest()) {
+                $article['images'] = $this->imageModel->where('article_id', $id)->orderBy('order_index','ASC')->findAll();
+                $view = view('admin/articles/form', [
+                    'article' => array_merge($article, $this->request->getPost()),
+                    'errors' => $this->validator->getErrors(),
+                ]);
+
+                return $this->respondWithFragments([
+                    '#modal-content' => $view,
+                    '#flash-container' => view('partials/flash'),
+                ]);
+            }
+
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 

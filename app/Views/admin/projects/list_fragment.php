@@ -1,29 +1,36 @@
-<div id="admin-projects-list" class="grid grid-cols-1 gap-4">
+<div id="admin-projects-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
     <?php if (! empty($projects)): ?>
         <?php foreach ($projects as $p): ?>
-            <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-                <div>
-                    <h3 class="font-semibold"><?= esc($p['title']) ?></h3>
-                    <div class="text-sm text-gray-600">Slug: <?= esc($p['slug']) ?></div>
+            <div class="brutal-card p-5 bg-white flex flex-col gap-3">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="space-y-1">
+                        <p class="text-xs uppercase tracking-widest font-black text-[var(--color-stroke)]">Project</p>
+                        <h3 class="text-xl font-extrabold leading-tight"><?= esc($p['title']) ?></h3>
+                        <div class="text-xs text-gray-600">Slug: <?= esc($p['slug']) ?></div>
+                    </div>
+                    <span class="brutal-pill bg-white">#<?= esc($p['id']) ?></span>
                 </div>
-                <div class="space-x-2">
-                    <button
-                        type="button"
-                        class="px-2 py-1 bg-blue-500 text-white rounded"
-                        data-ajax-url="/admin/projects/edit/<?= $p['id'] ?>"
-                        data-ajax-target="#modal-content"
-                    >Edit</button>
-                    <button
-                        type="button"
-                        class="px-2 py-1 bg-red-500 text-white rounded"
-                        data-ajax-url="/admin/projects/delete/<?= $p['id'] ?>"
-                        data-ajax-target="#admin-projects-list"
-                        data-ajax-confirm="Are you sure?"
-                    >Delete</button>
+                <div class="flex flex-wrap gap-2 justify-between items-center">
+                    <span class="text-sm text-gray-700 max-w-md block overflow-hidden" style="max-height: 3.5rem;"><?= esc($p['description'] ?? 'No description yet.') ?></span>
+                    <div class="flex gap-2">
+                        <button
+                            type="button"
+                            class="brutal-button px-3 py-2 bg-white"
+                            data-ajax-url="/admin/projects/edit/<?= $p['id'] ?>"
+                            data-ajax-target="#modal-content"
+                        >Edit</button>
+                        <button
+                            type="button"
+                            class="brutal-button px-3 py-2 bg-[var(--color-secondary)] text-white"
+                            data-ajax-url="/admin/projects/delete/<?= $p['id'] ?>"
+                            data-ajax-target="#admin-projects-list"
+                            data-ajax-confirm="Are you sure?"
+                        >Delete</button>
+                    </div>
                 </div>
             </div>
         <?php endforeach ?>
     <?php else: ?>
-        <div>No projects yet.</div>
+        <div class="brutal-card p-5 text-center font-extrabold">No projects yet.</div>
     <?php endif ?>
 </div>

@@ -1,10 +1,18 @@
-<nav class="h-full p-6 bg-[var(--color-surface)] brutal-border border-[var(--color-stroke)]">
-  <ul class="space-y-4">
-    <li><a href="/admin" class="block px-3 py-2 brutal-border border-[var(--color-stroke)] rounded-brutal text-[var(--color-primary)] font-semibold hover:bg-[var(--color-highlight)]/20">Dashboard</a></li>
-    <li><a href="/admin/projects" class="block px-3 py-2 brutal-border border-[var(--color-stroke)] rounded-brutal text-[var(--color-primary)] font-semibold hover:bg-[var(--color-highlight)]/20">Projects</a></li>
-    <li><a href="/admin/articles" class="block px-3 py-2 brutal-border border-[var(--color-stroke)] rounded-brutal text-[var(--color-primary)] font-semibold hover:bg-[var(--color-highlight)]/20">Articles</a></li>
-    <li><a href="/admin/profile" class="block px-3 py-2 brutal-border border-[var(--color-stroke)] rounded-brutal text-[var(--color-primary)] font-semibold hover:bg-[var(--color-highlight)]/20">Profile</a></li>
-    <li><a href="/admin/users" class="block px-3 py-2 brutal-border border-[var(--color-stroke)] rounded-brutal text-[var(--color-primary)] font-semibold hover:bg-[var(--color-highlight)]/20">Users</a></li>
-    <li><a href="/admin/auth/logout" class="block mt-6 px-3 py-2 bg-[var(--color-secondary)] text-white brutal-border border-[var(--color-stroke)] rounded-brutal text-center">Logout</a></li>
+<nav class="h-full p-6 space-y-6">
+  <div class="brutal-card brutal-card-accent p-4 flex items-center justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-widest font-bold">Admin Panel</p>
+      <h2 class="text-xl font-extrabold">Control Room</h2>
+    </div>
+    <span class="brutal-pill bg-white">Neo Brutal</span>
+  </div>
+
+  <ul class="space-y-3">
+    <li><a href="/admin" class="block px-4 py-3 brutal-card hover:-translate-y-1 transition transform">Dashboard</a></li>
+    <li><a href="/admin/projects" class="block px-4 py-3 brutal-card brutal-card-alt hover:-translate-y-1 transition transform">Projects</a></li>
+    <li><a href="/admin/articles" class="block px-4 py-3 brutal-card brutal-card-alt hover:-translate-y-1 transition transform">Articles</a></li>
+    <li><a href="/admin/profile" class="block px-4 py-3 brutal-card brutal-card-alt hover:-translate-y-1 transition transform">Profile</a></li>
+    <li><a href="/admin/users" class="block px-4 py-3 brutal-card brutal-card-alt hover:-translate-y-1 transition transform">Users</a></li>
+    <li><a href="/admin/auth/logout" class="block px-4 py-3 brutal-card bg-[var(--color-secondary)] text-white hover:-translate-y-1 transition transform text-center">Logout</a></li>
   </ul>
 </nav>
