@@ -1,3 +1,5 @@
+<?php helper('stack'); ?>
+<?php $stackItems = stack_resolved_list($project['tech_stack'] ?? null); ?>
 <?= $this->extend('templates/public_base') ?>
 
 <?= $this->section('content') ?>
@@ -18,6 +20,18 @@
                 <?php endforeach ?>
             </div>
         <?php endif ?>
+        <?php if (! empty($stackItems)): ?>
+            <div class="mt-2 flex flex-wrap gap-2">
+                <?php foreach ($stackItems as $item): ?>
+                    <span class="neo-chip is-soft inline-flex items-center gap-2">
+                        <span class="inline-flex w-7 h-7 items-center justify-center">
+                            <?= stack_icon_svg($item, 26) ?>
+                        </span>
+                        <?= esc($item['label']) ?>
+                    </span>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </header>
 
     <?php $sliderImages = array_map(static fn($img) => ['path' => $img['path'], 'alt' => $img['alt']], $project['images'] ?? []); ?>
