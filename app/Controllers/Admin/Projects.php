@@ -63,6 +63,7 @@ class Projects extends BaseAdmin
             'title' => $this->request->getPost('title'),
             'slug' => $this->request->getPost('slug'),
             'description' => $this->request->getPost('description'),
+            'tech_stack' => json_encode($this->request->getPost('tech_stack') ?? []),
             'is_public' => $this->request->getPost('is_public') ? 1 : 0,
             'published_at' => $this->request->getPost('published_at') ?: null,
         ];
@@ -141,6 +142,7 @@ class Projects extends BaseAdmin
             'title' => $this->request->getPost('title'),
             'slug' => $this->request->getPost('slug'),
             'description' => $this->request->getPost('description'),
+            'tech_stack' => json_encode($this->request->getPost('tech_stack') ?? []),
             'is_public' => $this->request->getPost('is_public') ? 1 : 0,
             'published_at' => $this->request->getPost('published_at') ?: null,
         ];
