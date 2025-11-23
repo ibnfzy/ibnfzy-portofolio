@@ -46,61 +46,77 @@
             <label class="block text-sm font-bold">Description</label>
             <textarea name="description" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" rows="6"><?= esc($formData['description'] ?? old('description') ?? ($project['description'] ?? '')) ?></textarea>
         </div>
-        <div class="space-y-2">
-            <div class="flex items-center justify-between gap-3 flex-wrap">
-                <label class="block text-sm font-bold">Tech Stack</label>
-                <input
-                    type="text"
-                    placeholder="Search stack"
-                    class="p-2 border-2 border-[var(--color-stroke)] rounded-brutal text-sm"
-                    data-stack-search
-                >
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-80 overflow-y-auto" data-stack-list>
-                <?php foreach ($catalog as $icon): ?>
-                    <?php $isChecked = in_array($icon['id'], $selectedStack, true); ?>
-                    <label
-                        class="flex items-center gap-3 brutal-card p-3 cursor-pointer transition hover:-translate-y-0.5"
-                        data-stack-option
-                        data-stack-id="<?= esc($icon['id']) ?>"
-                        data-stack-label="<?= esc(strtolower($icon['label'])) ?>"
-                        data-stack-name="<?= esc($icon['label']) ?>"
-                    >
-                        <input
-                            type="checkbox"
-                            class="sr-only"
-                            name="tech_stack[]"
-                            value="<?= esc($icon['id']) ?>"
-                            <?= $isChecked ? 'checked' : '' ?>
-                            data-stack-checkbox
-                        >
-                        <span class="flex items-center gap-3">
-                            <span class="w-10 h-10 inline-flex items-center justify-center" data-stack-icon>
-                                <?= stack_icon_svg($icon, 40) ?>
-                            </span>
-                            <span class="font-semibold text-sm"><?= esc($icon['label']) ?></span>
-                        </span>
-                        <span class="ml-auto text-xs brutal-pill <?= $isChecked ? 'bg-[var(--color-accent)] text-[var(--color-stroke)]' : 'bg-white' ?>" data-stack-state>
-                            <?= $isChecked ? 'Selected' : 'Choose' ?>
-                        </span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-            <p class="text-xs text-gray-600">Cari dan centang ikon untuk menandai teknologi yang digunakan.</p>
-        </div>
-        <div class="space-y-2">
+        <div class="space-y-3" data-stack-field>
             <div class="flex items-center justify-between gap-3 flex-wrap">
                 <div>
-                    <p class="block text-sm font-bold">Selected Tech</p>
-                    <p class="text-xs text-gray-600">Teknologi yang akan tampil di kartu project.</p>
+                    <label class="block text-sm font-bold">Tech Stack</label>
+                    <p class="text-xs text-gray-600">Pilih teknologi lalu tambahkan sebagai tag ke project.</p>
                 </div>
                 <span class="brutal-pill bg-white text-xs" data-stack-selected-count>Belum ada pilihan</span>
             </div>
-            <div
-                class="brutal-card border-2 border-[var(--color-stroke)] bg-[var(--color-highlight)]/30 p-4 space-y-3"
-                data-stack-selected-list
-            >
-                <p class="text-sm text-gray-600" data-stack-empty>Belum ada teknologi dipilih.</p>
+
+            <div class="space-y-2">
+                <div
+                    class="brutal-card border-2 border-[var(--color-stroke)] bg-white shadow-[4px_4px_0_var(--color-stroke)] p-3 flex flex-wrap gap-2 min-h-[3.25rem]"
+                    data-stack-chips
+                >
+                    <span class="text-xs text-gray-500" data-stack-placeholder>Belum ada teknologi dipilih.</span>
+                </div>
+
+                <div class="relative" data-stack-dropdown-wrapper>
+                    <input
+                        type="text"
+                        placeholder="Cari atau pilih teknologi"
+                        class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal pr-12"
+                        data-stack-input
+                    >
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 brutal-pill bg-white text-xs">Select</span>
+
+                    <div class="absolute left-0 right-0 mt-2 hidden" data-stack-dropdown>
+                        <div class="brutal-card border-2 border-[var(--color-stroke)] bg-[var(--color-highlight)]/30 shadow-[4px_4px_0_var(--color-stroke)] max-h-72 overflow-y-auto divide-y divide-[var(--color-stroke)]/10">
+                            <?php foreach ($catalog as $icon): ?>
+                                <?php $isChecked = in_array($icon['id'], $selectedStack, true); ?>
+                                <button
+                                    type="button"
+                                    class="w-full text-left flex items-center gap-3 p-3 hover:bg-white transition brutal-card border-2 border-transparent"
+                                    data-stack-option
+                                    data-stack-id="<?= esc($icon['id']) ?>"
+                                    data-stack-label="<?= esc(strtolower($icon['label'])) ?>"
+                                    data-stack-name="<?= esc($icon['label']) ?>"
+                                    data-selected="<?= $isChecked ? 'true' : 'false' ?>"
+                                >
+                                    <span class="w-10 h-10 inline-flex items-center justify-center bg-white rounded-brutal border-2 border-[var(--color-stroke)]" data-stack-icon>
+                                        <?= stack_icon_svg($icon, 40) ?>
+                                    </span>
+                                    <span class="font-semibold text-sm flex-1"><?= esc($icon['label']) ?></span>
+                                    <span class="text-xs brutal-pill <?= $isChecked ? 'bg-[var(--color-accent)] text-[var(--color-stroke)]' : 'bg-white' ?>" data-stack-state>
+                                        <?= $isChecked ? 'Selected' : 'Pilih' ?>
+                                    </span>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden" data-stack-hidden>
+                    <?php foreach ($selectedStack as $value): ?>
+                        <input type="hidden" name="tech_stack[]" value="<?= esc($value) ?>">
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                        <p class="block text-sm font-bold">Selected Tech</p>
+                        <p class="text-xs text-gray-600">Teknologi yang akan tampil di kartu project.</p>
+                    </div>
+                </div>
+                <div
+                    class="brutal-card border-2 border-[var(--color-stroke)] bg-[var(--color-highlight)]/30 p-4 space-y-3"
+                    data-stack-selected-list
+                >
+                    <p class="text-sm text-gray-600" data-stack-empty>Belum ada teknologi dipilih.</p>
+                </div>
             </div>
         </div>
         <div class="space-y-2">

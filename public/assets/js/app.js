@@ -310,36 +310,101 @@
             }
             form.__projectFormInitialised = true;
 
-            const searchInput = form.querySelector('[data-stack-search]');
-            const options = Array.from(form.querySelectorAll('[data-stack-option]'));
-            const selectedList = form.querySelector('[data-stack-selected-list]');
-            const selectedCount = form.querySelector('[data-stack-selected-count]');
-            const emptyStateTemplate = form.querySelector('[data-stack-empty]');
-            const getStackId = (option) => {
-                const checkbox = option.querySelector('[data-stack-checkbox]');
-                return checkbox?.value || option.dataset.stackId;
-            };
+            const fields = form.querySelectorAll('[data-stack-field]');
 
-            const selectedStack = new Set(
-                options
-                    .map((option) => {
-                        const checkbox = option.querySelector('[data-stack-checkbox]');
-                        return checkbox && checkbox.checked ? getStackId(option) : null;
-                    })
-                    .filter(Boolean)
-            );
+            fields.forEach((field) => {
+                if (field.__stackInitialised) return;
+                field.__stackInitialised = true;
 
-            const renderSelectedStack = () => {
-                if (!selectedList) return;
+                const input = field.querySelector('[data-stack-input]');
+                const dropdown = field.querySelector('[data-stack-dropdown]');
+                const options = Array.from(field.querySelectorAll('[data-stack-option]'));
+                const chipsContainer = field.querySelector('[data-stack-chips]');
+                const placeholder = field.querySelector('[data-stack-placeholder]');
+                const hiddenContainer = field.querySelector('[data-stack-hidden]');
+                const selectedList = field.querySelector('[data-stack-selected-list]');
+                const selectedCount = field.querySelector('[data-stack-selected-count]');
+                const emptyStateTemplate = field.querySelector('[data-stack-empty]');
 
-                selectedList.innerHTML = '';
+                const getStackId = (option) => option?.dataset.stackId;
 
-                if (!selectedStack.size) {
-                    const emptyState = emptyStateTemplate?.cloneNode(true) ?? document.createElement('p');
-                    emptyState.textContent = 'Belum ada teknologi dipilih.';
-                    emptyState.className = 'text-sm text-gray-600';
-                    selectedList.appendChild(emptyState);
-                } else {
+                const selectedStack = new Set(
+                    options
+                        .map((option) => (option.dataset.selected === 'true' ? getStackId(option) : null))
+                        .filter(Boolean)
+                );
+
+                const closeDropdown = () => dropdown?.classList.add('hidden');
+                const openDropdown = () => dropdown?.classList.remove('hidden');
+
+                const updateHiddenInputs = () => {
+                    if (!hiddenContainer) return;
+                    hiddenContainer.innerHTML = '';
+                    selectedStack.forEach((stackId) => {
+                        const inputHidden = document.createElement('input');
+                        inputHidden.type = 'hidden';
+                        inputHidden.name = 'tech_stack[]';
+                        inputHidden.value = stackId;
+                        hiddenContainer.appendChild(inputHidden);
+                    });
+                };
+
+                const renderChips = () => {
+                    if (!chipsContainer) return;
+
+                    chipsContainer.innerHTML = '';
+
+                    if (!selectedStack.size) {
+                        placeholder?.classList.remove('hidden');
+                        if (placeholder && !placeholder.parentElement) {
+                            chipsContainer.appendChild(placeholder);
+                        } else if (!placeholder) {
+                            const fallback = document.createElement('span');
+                            fallback.className = 'text-xs text-gray-500';
+                            fallback.textContent = 'Belum ada teknologi dipilih.';
+                            chipsContainer.appendChild(fallback);
+                        }
+                        return;
+                    }
+
+                    placeholder?.classList.add('hidden');
+
+                    selectedStack.forEach((stackId) => {
+                        const option = options.find((item) => getStackId(item) === stackId);
+                        if (!option) return;
+
+                        const chip = document.createElement('span');
+                        chip.className = 'brutal-pill bg-[var(--color-accent)] text-[var(--color-stroke)] text-xs flex items-center gap-2';
+
+                        const label = option.dataset.stackName || option.dataset.stackLabel || stackId;
+                        chip.textContent = label;
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'ml-1 text-[var(--color-stroke)] hover:opacity-80';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.addEventListener('click', () => {
+                            selectedStack.delete(stackId);
+                            updateSelectedView();
+                        });
+
+                        chip.appendChild(removeBtn);
+                        chipsContainer.appendChild(chip);
+                    });
+                };
+
+                const renderSelectedList = () => {
+                    if (!selectedList) return;
+                    selectedList.innerHTML = '';
+
+                    if (!selectedStack.size) {
+                        const emptyState = emptyStateTemplate?.cloneNode(true) ?? document.createElement('p');
+                        emptyState.textContent = 'Belum ada teknologi dipilih.';
+                        emptyState.className = 'text-sm text-gray-600';
+                        selectedList.appendChild(emptyState);
+                        return;
+                    }
+
                     selectedStack.forEach((stackId) => {
                         const option = options.find((item) => getStackId(item) === stackId);
                         if (!option) return;
@@ -364,69 +429,75 @@
 
                         selectedList.appendChild(item);
                     });
-                }
+                };
 
-                if (selectedCount) {
-                    selectedCount.textContent = selectedStack.size
-                        ? `${selectedStack.size} dipilih`
-                        : 'Belum ada pilihan';
-                }
-            };
-
-            const syncSelected = (id, checked) => {
-                if (!id) return;
-                if (checked) {
-                    selectedStack.add(id);
-                } else {
-                    selectedStack.delete(id);
-                }
-                renderSelectedStack();
-            };
-
-            if (searchInput) {
-                searchInput.addEventListener('input', (event) => {
-                    const query = (event.target.value || '').toLowerCase();
+                const updateOptionState = () => {
                     options.forEach((option) => {
-                        const label = option.dataset.stackLabel || '';
-                        const match = label.includes(query);
-                        option.classList.toggle('hidden', !match);
+                        const stackId = getStackId(option);
+                        const isSelected = selectedStack.has(stackId);
+                        option.dataset.selected = isSelected ? 'true' : 'false';
+                        option.classList.toggle('border-[var(--color-stroke)]', isSelected);
+                        option.classList.toggle('bg-white', isSelected);
+                        option.classList.toggle('shadow-[4px_4px_0_var(--color-stroke)]', isSelected);
+
+                        const state = option.querySelector('[data-stack-state]');
+                        if (state) {
+                            state.textContent = isSelected ? 'Selected' : 'Pilih';
+                            state.className = 'text-xs brutal-pill ' + (isSelected ? 'bg-[var(--color-accent)] text-[var(--color-stroke)]' : 'bg-white');
+                        }
+                    });
+                };
+
+                const updateSelectedCount = () => {
+                    if (!selectedCount) return;
+                    selectedCount.textContent = selectedStack.size ? `${selectedStack.size} dipilih` : 'Belum ada pilihan';
+                };
+
+                const updateSelectedView = () => {
+                    updateHiddenInputs();
+                    renderChips();
+                    renderSelectedList();
+                    updateOptionState();
+                    updateSelectedCount();
+                };
+
+                if (input) {
+                    input.addEventListener('focus', openDropdown);
+                    input.addEventListener('click', openDropdown);
+                    input.addEventListener('input', (event) => {
+                        const query = (event.target.value || '').toLowerCase();
+                        options.forEach((option) => {
+                            const label = option.dataset.stackLabel || '';
+                            const match = label.includes(query);
+                            option.classList.toggle('hidden', !match);
+                        });
+                        openDropdown();
+                    });
+                }
+
+                document.addEventListener('click', (event) => {
+                    if (!field.contains(event.target)) {
+                        closeDropdown();
+                    }
+                });
+
+                options.forEach((option) => {
+                    option.addEventListener('click', () => {
+                        const stackId = getStackId(option);
+                        if (!stackId) return;
+
+                        if (selectedStack.has(stackId)) {
+                            selectedStack.delete(stackId);
+                        } else {
+                            selectedStack.add(stackId);
+                        }
+
+                        updateSelectedView();
                     });
                 });
-            }
 
-            options.forEach((option) => {
-                const checkbox = option.querySelector('[data-stack-checkbox]');
-                const state = option.querySelector('[data-stack-state]');
-                const stackId = getStackId(option);
-                if (!checkbox) {
-                    return;
-                }
-                const setState = (checked) => {
-                    option.classList.toggle('ring-2', checked);
-                    option.classList.toggle('ring-[var(--color-accent)]', checked);
-                    if (state) {
-                        state.textContent = checked ? 'Selected' : 'Choose';
-                        state.className = 'ml-auto text-xs brutal-pill ' + (checked ? 'bg-[var(--color-accent)] text-[var(--color-stroke)]' : 'bg-white');
-                    }
-                };
-                setState(checkbox.checked);
-                syncSelected(stackId, checkbox.checked);
-
-                option.addEventListener('click', (event) => {
-                    if (event.target.tagName !== 'INPUT') {
-                        checkbox.checked = !checkbox.checked;
-                    }
-                    setState(checkbox.checked);
-                    syncSelected(stackId, checkbox.checked);
-                });
-
-                checkbox.addEventListener('change', () => {
-                    setState(checkbox.checked);
-                    syncSelected(stackId, checkbox.checked);
-                });
+                updateSelectedView();
             });
-
-            renderSelectedStack();
         });
     }
 
