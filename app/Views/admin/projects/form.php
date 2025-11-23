@@ -61,7 +61,9 @@
                     <label
                         class="flex items-center gap-3 brutal-card p-3 cursor-pointer transition hover:-translate-y-0.5"
                         data-stack-option
+                        data-stack-id="<?= esc($icon['id']) ?>"
                         data-stack-label="<?= esc(strtolower($icon['label'])) ?>"
+                        data-stack-name="<?= esc($icon['label']) ?>"
                     >
                         <input
                             type="checkbox"
@@ -72,7 +74,7 @@
                             data-stack-checkbox
                         >
                         <span class="flex items-center gap-3">
-                            <span class="w-10 h-10 inline-flex items-center justify-center">
+                            <span class="w-10 h-10 inline-flex items-center justify-center" data-stack-icon>
                                 <?= stack_icon_svg($icon, 40) ?>
                             </span>
                             <span class="font-semibold text-sm"><?= esc($icon['label']) ?></span>
@@ -84,6 +86,21 @@
                 <?php endforeach; ?>
             </div>
             <p class="text-xs text-gray-600">Cari dan centang ikon untuk menandai teknologi yang digunakan.</p>
+        </div>
+        <div class="space-y-2">
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                    <p class="block text-sm font-bold">Selected Tech</p>
+                    <p class="text-xs text-gray-600">Teknologi yang akan tampil di kartu project.</p>
+                </div>
+                <span class="brutal-pill bg-white text-xs" data-stack-selected-count>Belum ada pilihan</span>
+            </div>
+            <div
+                class="brutal-card border-2 border-[var(--color-stroke)] bg-[var(--color-highlight)]/30 p-4 space-y-3"
+                data-stack-selected-list
+            >
+                <p class="text-sm text-gray-600" data-stack-empty>Belum ada teknologi dipilih.</p>
+            </div>
         </div>
         <div class="space-y-2">
             <label class="block text-sm font-bold">Images (multiple)</label>
@@ -105,8 +122,67 @@
 </div>
 <script>
     (function() {
+        const selectedStack = new Set(<?= json_encode($selectedStack) ?>);
         const searchInput = document.querySelector('[data-stack-search]');
         const options = Array.from(document.querySelectorAll('[data-stack-option]'));
+        const selectedList = document.querySelector('[data-stack-selected-list]');
+        const selectedCount = document.querySelector('[data-stack-selected-count]');
+        const emptyStateTemplate = document.querySelector('[data-stack-empty]');
+
+        const renderSelectedStack = () => {
+            if (! selectedList) return;
+
+            selectedList.innerHTML = '';
+
+            if (! selectedStack.size) {
+                const emptyState = emptyStateTemplate?.cloneNode(true) ?? document.createElement('p');
+                emptyState.textContent = 'Belum ada teknologi dipilih.';
+                emptyState.className = 'text-sm text-gray-600';
+                selectedList.appendChild(emptyState);
+            } else {
+                selectedStack.forEach((stackId) => {
+                    const option = options.find((item) => item.dataset.stackId === stackId);
+                    if (! option) return;
+
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center gap-3 brutal-card border-2 border-[var(--color-stroke)] bg-white shadow-[4px_4px_0_var(--color-stroke)] p-3';
+
+                    const icon = option.querySelector('[data-stack-icon]');
+                    const iconWrapper = document.createElement('span');
+                    iconWrapper.className = 'w-10 h-10 inline-flex items-center justify-center bg-[var(--color-highlight)]/40 rounded-brutal border-2 border-[var(--color-stroke)]';
+                    if (icon) {
+                        iconWrapper.appendChild(icon.cloneNode(true));
+                    }
+
+                    const name = option.dataset.stackName || option.dataset.stackLabel || 'Unknown';
+                    const title = document.createElement('span');
+                    title.className = 'font-semibold text-sm';
+                    title.textContent = name;
+
+                    item.appendChild(iconWrapper);
+                    item.appendChild(title);
+
+                    selectedList.appendChild(item);
+                });
+            }
+
+            if (selectedCount) {
+                selectedCount.textContent = selectedStack.size
+                    ? `${selectedStack.size} dipilih`
+                    : 'Belum ada pilihan';
+            }
+        };
+
+        const syncSelected = (id, checked) => {
+            if (! id) return;
+            if (checked) {
+                selectedStack.add(id);
+            } else {
+                selectedStack.delete(id);
+            }
+            renderSelectedStack();
+        };
+
         if (searchInput) {
             searchInput.addEventListener('input', (event) => {
                 const query = (event.target.value || '').toLowerCase();
@@ -121,6 +197,7 @@
         options.forEach((option) => {
             const checkbox = option.querySelector('[data-stack-checkbox]');
             const state = option.querySelector('[data-stack-state]');
+            const stackId = option.dataset.stackId;
             const setState = (checked) => {
                 option.classList.toggle('ring-2', checked);
                 option.classList.toggle('ring-[var(--color-accent)]', checked);
@@ -130,13 +207,26 @@
                 }
             };
             setState(checkbox.checked);
+            if (checkbox.checked) {
+                selectedStack.add(stackId);
+            } else {
+                selectedStack.delete(stackId);
+            }
 
             option.addEventListener('click', (e) => {
                 if (e.target.tagName !== 'INPUT') {
                     checkbox.checked = !checkbox.checked;
                 }
                 setState(checkbox.checked);
+                syncSelected(stackId, checkbox.checked);
+            });
+
+            checkbox.addEventListener('change', () => {
+                setState(checkbox.checked);
+                syncSelected(stackId, checkbox.checked);
             });
         });
+
+        renderSelectedStack();
     })();
 </script>
