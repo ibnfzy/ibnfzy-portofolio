@@ -315,13 +315,18 @@
             const selectedList = form.querySelector('[data-stack-selected-list]');
             const selectedCount = form.querySelector('[data-stack-selected-count]');
             const emptyStateTemplate = form.querySelector('[data-stack-empty]');
+            const getStackId = (option) => {
+                const checkbox = option.querySelector('[data-stack-checkbox]');
+                return checkbox?.value || option.dataset.stackId;
+            };
+
             const selectedStack = new Set(
                 options
-                    .filter((option) => {
+                    .map((option) => {
                         const checkbox = option.querySelector('[data-stack-checkbox]');
-                        return checkbox && checkbox.checked && option.dataset.stackId;
+                        return checkbox && checkbox.checked ? getStackId(option) : null;
                     })
-                    .map((option) => option.dataset.stackId)
+                    .filter(Boolean)
             );
 
             const renderSelectedStack = () => {
@@ -336,7 +341,7 @@
                     selectedList.appendChild(emptyState);
                 } else {
                     selectedStack.forEach((stackId) => {
-                        const option = options.find((item) => item.dataset.stackId === stackId);
+                        const option = options.find((item) => getStackId(item) === stackId);
                         if (!option) return;
 
                         const item = document.createElement('div');
@@ -392,7 +397,7 @@
             options.forEach((option) => {
                 const checkbox = option.querySelector('[data-stack-checkbox]');
                 const state = option.querySelector('[data-stack-state]');
-                const stackId = option.dataset.stackId;
+                const stackId = getStackId(option);
                 if (!checkbox) {
                     return;
                 }
