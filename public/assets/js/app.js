@@ -12,10 +12,12 @@
         document.addEventListener('click', handleLightboxClick);
         document.addEventListener('DOMContentLoaded', () => {
             initSliders();
+            initProjectForm();
         });
         // When the DOM is already ready (script loaded at end of body)
         if (document.readyState !== 'loading') {
             initSliders();
+            initProjectForm();
         }
     }
 
@@ -214,6 +216,7 @@
 
         target.innerHTML = html || '';
         initSliders(target);
+        initProjectForm(target);
     }
 
     function updateModalContent(html) {
@@ -232,6 +235,7 @@
         toggleModal(shouldShow);
         if (shouldShow) {
             initSliders(container);
+            initProjectForm(container);
         }
     }
 
@@ -296,6 +300,130 @@
 
     window.openLightbox = openLightbox;
     window.closeLightbox = closeLightbox;
+
+    function initProjectForm(root = document) {
+        const forms = root.querySelectorAll('[data-project-form]');
+
+        forms.forEach((form) => {
+            if (form.__projectFormInitialised) {
+                return;
+            }
+            form.__projectFormInitialised = true;
+
+            const searchInput = form.querySelector('[data-stack-search]');
+            const options = Array.from(form.querySelectorAll('[data-stack-option]'));
+            const selectedList = form.querySelector('[data-stack-selected-list]');
+            const selectedCount = form.querySelector('[data-stack-selected-count]');
+            const emptyStateTemplate = form.querySelector('[data-stack-empty]');
+            const selectedStack = new Set(
+                options
+                    .filter((option) => {
+                        const checkbox = option.querySelector('[data-stack-checkbox]');
+                        return checkbox && checkbox.checked && option.dataset.stackId;
+                    })
+                    .map((option) => option.dataset.stackId)
+            );
+
+            const renderSelectedStack = () => {
+                if (!selectedList) return;
+
+                selectedList.innerHTML = '';
+
+                if (!selectedStack.size) {
+                    const emptyState = emptyStateTemplate?.cloneNode(true) ?? document.createElement('p');
+                    emptyState.textContent = 'Belum ada teknologi dipilih.';
+                    emptyState.className = 'text-sm text-gray-600';
+                    selectedList.appendChild(emptyState);
+                } else {
+                    selectedStack.forEach((stackId) => {
+                        const option = options.find((item) => item.dataset.stackId === stackId);
+                        if (!option) return;
+
+                        const item = document.createElement('div');
+                        item.className = 'flex items-center gap-3 brutal-card border-2 border-[var(--color-stroke)] bg-white shadow-[4px_4px_0_var(--color-stroke)] p-3';
+
+                        const icon = option.querySelector('[data-stack-icon]');
+                        const iconWrapper = document.createElement('span');
+                        iconWrapper.className = 'w-10 h-10 inline-flex items-center justify-center bg-[var(--color-highlight)]/40 rounded-brutal border-2 border-[var(--color-stroke)]';
+                        if (icon) {
+                            iconWrapper.appendChild(icon.cloneNode(true));
+                        }
+
+                        const name = option.dataset.stackName || option.dataset.stackLabel || 'Unknown';
+                        const title = document.createElement('span');
+                        title.className = 'font-semibold text-sm';
+                        title.textContent = name;
+
+                        item.appendChild(iconWrapper);
+                        item.appendChild(title);
+
+                        selectedList.appendChild(item);
+                    });
+                }
+
+                if (selectedCount) {
+                    selectedCount.textContent = selectedStack.size
+                        ? `${selectedStack.size} dipilih`
+                        : 'Belum ada pilihan';
+                }
+            };
+
+            const syncSelected = (id, checked) => {
+                if (!id) return;
+                if (checked) {
+                    selectedStack.add(id);
+                } else {
+                    selectedStack.delete(id);
+                }
+                renderSelectedStack();
+            };
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (event) => {
+                    const query = (event.target.value || '').toLowerCase();
+                    options.forEach((option) => {
+                        const label = option.dataset.stackLabel || '';
+                        const match = label.includes(query);
+                        option.classList.toggle('hidden', !match);
+                    });
+                });
+            }
+
+            options.forEach((option) => {
+                const checkbox = option.querySelector('[data-stack-checkbox]');
+                const state = option.querySelector('[data-stack-state]');
+                const stackId = option.dataset.stackId;
+                if (!checkbox) {
+                    return;
+                }
+                const setState = (checked) => {
+                    option.classList.toggle('ring-2', checked);
+                    option.classList.toggle('ring-[var(--color-accent)]', checked);
+                    if (state) {
+                        state.textContent = checked ? 'Selected' : 'Choose';
+                        state.className = 'ml-auto text-xs brutal-pill ' + (checked ? 'bg-[var(--color-accent)] text-[var(--color-stroke)]' : 'bg-white');
+                    }
+                };
+                setState(checkbox.checked);
+                syncSelected(stackId, checkbox.checked);
+
+                option.addEventListener('click', (event) => {
+                    if (event.target.tagName !== 'INPUT') {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    setState(checkbox.checked);
+                    syncSelected(stackId, checkbox.checked);
+                });
+
+                checkbox.addEventListener('change', () => {
+                    setState(checkbox.checked);
+                    syncSelected(stackId, checkbox.checked);
+                });
+            });
+
+            renderSelectedStack();
+        });
+    }
 
     function initSliders(root = document) {
         const sliders = root.querySelectorAll('[data-slider]');
