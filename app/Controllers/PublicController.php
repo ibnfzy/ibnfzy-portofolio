@@ -12,7 +12,7 @@ class PublicController extends BaseController
 
         $data = [];
         // Latest 3 projects
-        $data['projects'] = $projectModel->where('is_public',1)->orderBy('created_at','DESC')->findAll(3);
+        $data['projects'] = $projectModel->where('visibility','public')->orderBy('created_at','DESC')->findAll(3);
         // Latest 3 articles
         $data['articles'] = $articleModel->where('is_published',1)->orderBy('published_at','DESC')->findAll(3);
         // Profile (first)
@@ -24,7 +24,7 @@ class PublicController extends BaseController
     public function projects(): string
     {
         $projectModel = new \App\Models\ProjectModel();
-        $data['projects'] = $projectModel->where('is_public',1)->orderBy('created_at','DESC')->findAll();
+        $data['projects'] = $projectModel->where('visibility','public')->orderBy('created_at','DESC')->findAll();
         return view('public/projects', $data);
     }
 
@@ -32,6 +32,7 @@ class PublicController extends BaseController
     {
         $projectModel = new \App\Models\ProjectModel();
         $imageModel = new \App\Models\ProjectImageModel();
+        $profileModel = new \App\Models\ProfileModel();
 
         $project = $projectModel->where('slug', $slug)->first();
         if (! $project) {
@@ -40,6 +41,7 @@ class PublicController extends BaseController
 
         $project['images'] = $imageModel->where('project_id', $project['id'])->orderBy('order_index','ASC')->findAll();
         $data['project'] = $project;
+        $data['profile'] = $profileModel->orderBy('id','ASC')->first();
         return view('public/project_detail', $data);
     }
 

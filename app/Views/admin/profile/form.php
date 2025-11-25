@@ -61,6 +61,12 @@
         </div>
     </div>
 
+    <div class="space-y-1">
+        <label class="block text-sm font-bold">Nomor WhatsApp</label>
+        <input type="text" name="whatsapp_number" value="<?= esc(old('whatsapp_number') ?? ($profile['whatsapp_number'] ?? '')) ?>" class="mt-1 block w-full border-2 border-[var(--color-stroke)] rounded-brutal px-3 py-2 focus-brutal" placeholder="Contoh: 6281234567890">
+        <p class="text-xs text-gray-600">Digunakan untuk tombol hubungi pada proyek dengan visibility Private.</p>
+    </div>
+
     <div class="grid grid-cols-2 gap-4">
         <div class="space-y-2">
             <label class="block text-sm font-bold">Avatar (image)</label>

@@ -4,6 +4,8 @@
 <?php helper('stack'); ?>
 <?php $catalog = stack_catalog(); ?>
 <?php $selectedStack = stack_decode($formData['tech_stack'] ?? old('tech_stack') ?? ($project['tech_stack'] ?? null)); ?>
+<?php $currentVisibility = $formData['visibility'] ?? old('visibility') ?? ($project['visibility'] ?? 'public'); ?>
+<?php $currentGithub = $formData['github_url'] ?? old('github_url') ?? ($project['github_url'] ?? ''); ?>
 <div class="w-full max-w-2xl">
     <div class="brutal-card p-6 bg-white space-y-4">
         <div class="flex items-start justify-between">
@@ -41,6 +43,30 @@
         <div class="space-y-1">
             <label class="block text-sm font-bold">Slug</label>
             <input type="text" name="slug" value="<?= esc($formData['slug'] ?? old('slug') ?? ($project['slug'] ?? '')) ?>" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" required>
+        </div>
+        <div class="space-y-2">
+            <label class="block text-sm font-bold">Visibility</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <label class="flex items-start gap-3 brutal-card bg-white border-2 border-[var(--color-stroke)] p-3">
+                    <input type="radio" name="visibility" value="public" class="mt-1" <?= $currentVisibility === 'public' ? 'checked' : '' ?>>
+                    <div>
+                        <p class="font-semibold">Public</p>
+                        <p class="text-xs text-gray-600">Ditampilkan untuk umum dan harus memiliki tautan GitHub.</p>
+                    </div>
+                </label>
+                <label class="flex items-start gap-3 brutal-card bg-white border-2 border-[var(--color-stroke)] p-3">
+                    <input type="radio" name="visibility" value="private" class="mt-1" <?= $currentVisibility === 'private' ? 'checked' : '' ?>>
+                    <div>
+                        <p class="font-semibold">Private</p>
+                        <p class="text-xs text-gray-600">Tidak dipublikasikan dan hanya bisa dihubungi lewat WhatsApp.</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-bold">GitHub URL</label>
+            <input type="url" name="github_url" value="<?= esc($currentGithub) ?>" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" placeholder="https://github.com/username/repo" <?= $currentVisibility === 'public' ? 'required' : '' ?>>
+            <p class="text-xs text-gray-600">Wajib diisi ketika visibility Public.</p>
         </div>
         <div class="space-y-1">
             <label class="block text-sm font-bold">Description</label>

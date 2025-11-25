@@ -1,5 +1,12 @@
 <?php helper('stack'); ?>
 <?php $stackItems = stack_resolved_list($project['tech_stack'] ?? null); ?>
+<?php
+    $visibility = $project['visibility'] ?? 'public';
+    $githubUrl = $project['github_url'] ?? null;
+    $whatsappNumber = isset($profile['whatsapp_number']) ? preg_replace('/\D+/', '', $profile['whatsapp_number']) : null;
+    $whatsappMessage = rawurlencode('Halo, saya tertarik membahas project "' . ($project['title'] ?? '') . '".');
+    $whatsappLink = $whatsappNumber ? "https://wa.me/{$whatsappNumber}?text={$whatsappMessage}" : null;
+?>
 <?= $this->extend('templates/public_base') ?>
 
 <?= $this->section('content') ?>
@@ -11,7 +18,21 @@
             <p class="neo-meta">Project</p>
             <h1 class="text-3xl font-heading font-extrabold leading-tight"><?= esc($project['title']) ?></h1>
           </div>
-          <span class="neo-chip is-slim"><?= esc($project['published_at']) ?></span>
+          <div class="flex items-center gap-2 flex-wrap justify-end">
+              <span class="neo-chip is-slim">Visibilitas: <?= esc(ucfirst($visibility)) ?></span>
+              <?php if (! empty($project['published_at'])): ?>
+                  <span class="neo-chip is-slim"><?= esc($project['published_at']) ?></span>
+              <?php endif; ?>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+            <?php if ($visibility === 'public' && ! empty($githubUrl)): ?>
+                <a href="<?= esc($githubUrl) ?>" target="_blank" class="neo-btn primary inline-flex items-center gap-2">Lihat di GitHub<span aria-hidden="true">↗</span></a>
+            <?php elseif ($visibility === 'private' && $whatsappLink): ?>
+                <a href="<?= esc($whatsappLink) ?>" target="_blank" class="neo-btn primary inline-flex items-center gap-2">Hubungi via WhatsApp<span aria-hidden="true">💬</span></a>
+            <?php elseif ($visibility === 'private'): ?>
+                <span class="neo-chip is-ghost">Nomor WhatsApp belum tersedia</span>
+            <?php endif; ?>
         </div>
         <?php if (! empty($project['tags'] ?? [])): ?>
             <div class="mt-2 flex flex-wrap gap-2">

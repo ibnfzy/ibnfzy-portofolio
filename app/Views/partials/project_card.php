@@ -1,8 +1,12 @@
 <?php helper('stack'); ?>
 <?php $stackItems = stack_resolved_list($project['tech_stack'] ?? null); ?>
+<?php $visibility = $project['visibility'] ?? 'public'; ?>
 <a href="/projects/<?= esc($project['slug'] ?? $project['id']) ?>" class="block neo-panel is-soft neo-hover h-full">
     <div class="neo-thumb h-44 relative">
-        <span class="neo-chip is-ghost is-slim absolute top-3 right-3">Proyek</span>
+        <div class="absolute top-3 right-3 flex flex-col items-end gap-2">
+            <span class="neo-chip is-ghost is-slim">Proyek</span>
+            <span class="neo-chip is-slim <?= $visibility === 'private' ? 'bg-[var(--accent)] text-[var(--ink)]' : '' ?>"><?= esc(ucfirst($visibility)) ?></span>
+        </div>
         <?php if (! empty($project['image'] ?? null)): ?>
             <img src="<?= esc($project['image']) ?>" alt="<?= esc($project['title']) ?>" class="w-full h-full object-cover">
         <?php else: ?>
