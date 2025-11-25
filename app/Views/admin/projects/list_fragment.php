@@ -8,6 +8,12 @@
                         <p class='text-xs uppercase tracking-widest font-black text-[var(--color-stroke)]'>Project</p>
                         <h3 class='text-xl font-extrabold leading-tight'><?= esc($p['title']) ?></h3>
                         <div class='text-xs text-gray-600'>Slug: <?= esc($p['slug']) ?></div>
+                        <div class='flex items-center gap-2 text-xs'>
+                            <span class='brutal-pill bg-[var(--color-highlight)]/60 uppercase tracking-widest'><?= esc(strtoupper($p['visibility'] ?? 'public')) ?></span>
+                            <?php if (! empty($p['github_url'])): ?>
+                                <a href='<?= esc($p['github_url']) ?>' target='_blank' class='underline text-[var(--color-stroke)]'>GitHub</a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <span class='brutal-pill bg-white'>#<?= esc($p['id']) ?></span>
                 </div>

@@ -39,8 +39,14 @@ class Projects extends BaseAdmin
     {
         $rules = [
             'title' => 'required|min_length[3]|max_length[255]',
-            'slug' => 'required|alpha_dash|min_length[3]|max_length[255]'
+            'slug' => 'required|alpha_dash|min_length[3]|max_length[255]',
+            'visibility' => 'required|in_list[public,private]',
         ];
+
+        $visibility = $this->request->getPost('visibility') === 'private' ? 'private' : 'public';
+        $githubRule = $visibility === 'public' ? 'required|valid_url' : 'permit_empty|valid_url';
+        $rules['github_url'] = $githubRule;
+        $githubUrl = $this->request->getPost('github_url') ?: null;
 
         if (! $this->validate($rules)) {
             if ($this->isAjaxRequest()) {
@@ -64,7 +70,9 @@ class Projects extends BaseAdmin
             'slug' => $this->request->getPost('slug'),
             'description' => $this->request->getPost('description'),
             'tech_stack' => json_encode($this->request->getPost('tech_stack') ?? []),
-            'is_public' => $this->request->getPost('is_public') ? 1 : 0,
+            'visibility' => $visibility,
+            'github_url' => $githubUrl,
+            'is_public' => $visibility === 'public' ? 1 : 0,
             'published_at' => $this->request->getPost('published_at') ?: null,
         ];
 
@@ -118,8 +126,14 @@ class Projects extends BaseAdmin
 
         $rules = [
             'title' => 'required|min_length[3]|max_length[255]',
-            'slug' => 'required|alpha_dash|min_length[3]|max_length[255]'
+            'slug' => 'required|alpha_dash|min_length[3]|max_length[255]',
+            'visibility' => 'required|in_list[public,private]',
         ];
+
+        $visibility = $this->request->getPost('visibility') === 'private' ? 'private' : 'public';
+        $githubRule = $visibility === 'public' ? 'required|valid_url' : 'permit_empty|valid_url';
+        $rules['github_url'] = $githubRule;
+        $githubUrl = $this->request->getPost('github_url') ?: null;
         if (! $this->validate($rules)) {
             if ($this->isAjaxRequest()) {
                 $project['images'] = $this->imageModel->where('project_id', $id)->orderBy('order_index','ASC')->findAll();
@@ -143,7 +157,9 @@ class Projects extends BaseAdmin
             'slug' => $this->request->getPost('slug'),
             'description' => $this->request->getPost('description'),
             'tech_stack' => json_encode($this->request->getPost('tech_stack') ?? []),
-            'is_public' => $this->request->getPost('is_public') ? 1 : 0,
+            'visibility' => $visibility,
+            'github_url' => $githubUrl,
+            'is_public' => $visibility === 'public' ? 1 : 0,
             'published_at' => $this->request->getPost('published_at') ?: null,
         ];
 

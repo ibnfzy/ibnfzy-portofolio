@@ -18,6 +18,7 @@ class ProfileSeeder extends Seeder
             'website' => 'https://example.com',
             'github_url' => 'https://github.com/ibnfzy',
             'linkedin_url' => 'https://www.linkedin.com/in/ibnfzy',
+            'whatsapp_number' => '6281234567890',
             'avatar_path' => '/public_site_assets/images/profile.jpg',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),

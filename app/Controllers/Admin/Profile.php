@@ -69,6 +69,7 @@ class Profile extends BaseAdmin
             'website' => $this->request->getPost('website'),
             'github_url' => $this->request->getPost('github_url'),
             'linkedin_url' => $this->request->getPost('linkedin_url'),
+            'whatsapp_number' => $this->request->getPost('whatsapp_number'),
         ];
 
         // handle uploads (avatar + cv)
