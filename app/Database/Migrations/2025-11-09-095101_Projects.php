@@ -50,6 +50,18 @@ class Projects extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
+            'visibility' => [
+                'type' => 'ENUM',
+                'constraint' => ['public', 'private'],
+                'default' => 'public',
+                'after' => 'published_at',
+            ],
+            'github_url' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+                'after' => 'visibility',
+            ],
         ]);
 
         $this->forge->addKey('id', true);

@@ -62,6 +62,12 @@ class ProfileInfo extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
+            'whatsapp_number' => [
+                'type' => 'VARCHAR',
+                'constraint' => 30,
+                'null' => true,
+                'after' => 'linkedin_url',
+            ],
         ]);
 
         $this->forge->addKey('id', true);
