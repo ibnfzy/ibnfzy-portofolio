@@ -62,6 +62,11 @@ class Projects extends Migration
                 'null' => true,
                 'after' => 'visibility',
             ],
+            'tags' => [
+                'type' => 'JSON',
+                'null' => true,
+                'after' => 'tech_stack',
+            ],
         ]);
 
         $this->forge->addKey('id', true);
