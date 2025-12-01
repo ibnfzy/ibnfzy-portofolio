@@ -68,6 +68,10 @@ class ProfileInfo extends Migration
                 'null' => true,
                 'after' => 'linkedin_url',
             ],
+            'skills' => [
+                'type' => 'JSON',
+                'null' => true,
+            ],
         ]);
 
         $this->forge->addKey('id', true);
