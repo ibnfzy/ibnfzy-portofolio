@@ -8,6 +8,9 @@ class ProfileModel extends Model
 {
     protected $table = 'profile_info';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['user_id','full_name','bio','location','website','github_url','linkedin_url','whatsapp_number','avatar_path','cv_path','created_at','updated_at'];
+    protected $allowedFields = ['user_id','full_name','bio','location','website','github_url','linkedin_url','whatsapp_number','avatar_path','cv_path','skills','created_at','updated_at'];
     protected $useTimestamps = false;
+    protected $casts = [
+        'skills' => 'json',
+    ];
 }

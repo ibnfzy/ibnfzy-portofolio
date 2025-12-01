@@ -3,13 +3,14 @@
 <?= $this->section('content') ?>
 
 <section class="space-y-14">
+  <?php $skills = $profile['skills'] ?? []; ?>
   <!-- Hero (uses profile from DB if available) -->
   <section class="grid lg:grid-cols-[1.25fr_0.9fr] gap-6 items-start">
     <article class="neo-panel is-accent p-8 space-y-6">
       <div class="neo-sticker"></div>
       <div class="flex items-center gap-3">
-        <span class="neo-chip is-ghost">Available for freelance</span>
-        <span class="neo-meta">Neo brutal minimal</span>
+        <span class="neo-chip is-ghost"><?= esc($skills['availability_badge'] ?? 'Available for freelance') ?></span>
+        <span class="neo-meta"><?= esc($skills['style_badge'] ?? 'Neo brutal minimal') ?></span>
       </div>
       <div class="space-y-2 relative z-10">
         <h1 class="text-4xl md:text-5xl font-heading font-extrabold leading-[1.05]">
@@ -23,22 +24,32 @@
       <div class="flex flex-wrap gap-3 items-center relative z-10">
         <a href="#projects" class="neo-btn primary">⚡ Lihat Proyek</a>
         <a href="#about" class="neo-btn secondary">👀 Tentang Saya</a>
-        <span class="neo-chip is-slim">Clean motion</span>
+        <span class="neo-chip is-slim"><?= esc($skills['cta_chip'] ?? 'Clean motion') ?></span>
       </div>
 
       <div class="grid sm:grid-cols-3 gap-4 relative z-10">
-        <div class="neo-panel is-soft p-4 space-y-1">
-          <p class="neo-meta">Frontend</p>
-          <p class="font-semibold">React, HTMX, Tailwind</p>
-        </div>
-        <div class="neo-panel is-soft p-4 space-y-1">
-          <p class="neo-meta">Backend</p>
-          <p class="font-semibold">PHP, CodeIgniter, REST</p>
-        </div>
-        <div class="neo-panel is-soft p-4 space-y-1">
-          <p class="neo-meta">Desain</p>
-          <p class="font-semibold">UI/UX, Prototyping</p>
-        </div>
+        <?php $focusAreas = $skills['focus_areas'] ?? []; ?>
+        <?php if (! empty($focusAreas)): ?>
+          <?php foreach ($focusAreas as $focus): ?>
+            <div class="neo-panel is-soft p-4 space-y-1">
+              <p class="neo-meta"><?= esc($focus['label'] ?? '') ?></p>
+              <p class="font-semibold"><?= esc($focus['items'] ?? '') ?></p>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="neo-panel is-soft p-4 space-y-1">
+            <p class="neo-meta">Frontend</p>
+            <p class="font-semibold">React, HTMX, Tailwind</p>
+          </div>
+          <div class="neo-panel is-soft p-4 space-y-1">
+            <p class="neo-meta">Backend</p>
+            <p class="font-semibold">PHP, CodeIgniter, REST</p>
+          </div>
+          <div class="neo-panel is-soft p-4 space-y-1">
+            <p class="neo-meta">Desain</p>
+            <p class="font-semibold">UI/UX, Prototyping</p>
+          </div>
+        <?php endif; ?>
       </div>
     </article>
 
@@ -49,7 +60,7 @@
       <div class="flex items-start justify-between gap-3">
         <div>
           <div class="text-lg font-heading font-extrabold"><?= esc($profile['full_name'] ?? 'Nama Anda') ?></div>
-          <div class="neo-subtle text-sm"><?= esc($profile['website'] ?? 'Web Developer • UI/UX • Open Source') ?></div>
+          <div class="neo-subtle text-sm"><?= esc($skills['headline'] ?? ($profile['website'] ?? 'Web Developer • UI/UX • Open Source')) ?></div>
         </div>
         <span class="neo-chip is-slim">Trust</span>
       </div>
@@ -67,24 +78,37 @@
       </div>
       <span class="neo-chip is-ghost">Sederhana & jujur</span>
     </div>
-    <p class="neo-subtle text-base leading-7">Saya membuat website dan produk digital dengan struktur tajam, kontras tinggi, dan hierarki visual yang jelas. Desain neo-brutalism yang disederhanakan membuat pesan utama mudah tertangkap.</p>
+    <p class="neo-subtle text-base leading-7">
+      <?= esc($skills['workflow_intro'] ?? 'Saya membuat website dan produk digital dengan struktur tajam, kontras tinggi, dan hierarki visual yang jelas. Desain neo-brutalism yang disederhanakan membuat pesan utama mudah tertangkap.') ?>
+    </p>
 
     <div class="grid md:grid-cols-3 gap-4">
-      <div class="neo-panel is-soft p-4 space-y-2">
-        <div class="neo-meta">01</div>
-        <div class="font-heading font-extrabold text-lg">Discovery</div>
-        <p class="neo-subtle text-sm">Memahami kebutuhan, menyusun scope, dan menyiapkan gaya visual yang relevan.</p>
-      </div>
-      <div class="neo-panel is-soft p-4 space-y-2">
-        <div class="neo-meta">02</div>
-        <div class="font-heading font-extrabold text-lg">Design</div>
-        <p class="neo-subtle text-sm">Menyusun layout lugas, tipografi tegas, dan interaksi mikro yang ringan.</p>
-      </div>
-      <div class="neo-panel is-soft p-4 space-y-2">
-        <div class="neo-meta">03</div>
-        <div class="font-heading font-extrabold text-lg">Build</div>
-        <p class="neo-subtle text-sm">Mengembangkan komponen cepat, responsif, dan mudah dirawat untuk produksi.</p>
-      </div>
+      <?php $workflow = $skills['workflow'] ?? []; ?>
+      <?php if (! empty($workflow)): ?>
+        <?php foreach ($workflow as $step): ?>
+          <div class="neo-panel is-soft p-4 space-y-2">
+            <div class="neo-meta"><?= esc($step['order'] ?? '') ?></div>
+            <div class="font-heading font-extrabold text-lg"><?= esc($step['title'] ?? '') ?></div>
+            <p class="neo-subtle text-sm"><?= esc($step['description'] ?? '') ?></p>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="neo-panel is-soft p-4 space-y-2">
+          <div class="neo-meta">01</div>
+          <div class="font-heading font-extrabold text-lg">Discovery</div>
+          <p class="neo-subtle text-sm">Memahami kebutuhan, menyusun scope, dan menyiapkan gaya visual yang relevan.</p>
+        </div>
+        <div class="neo-panel is-soft p-4 space-y-2">
+          <div class="neo-meta">02</div>
+          <div class="font-heading font-extrabold text-lg">Design</div>
+          <p class="neo-subtle text-sm">Menyusun layout lugas, tipografi tegas, dan interaksi mikro yang ringan.</p>
+        </div>
+        <div class="neo-panel is-soft p-4 space-y-2">
+          <div class="neo-meta">03</div>
+          <div class="font-heading font-extrabold text-lg">Build</div>
+          <p class="neo-subtle text-sm">Mengembangkan komponen cepat, responsif, dan mudah dirawat untuk produksi.</p>
+        </div>
+      <?php endif; ?>
     </div>
   </section>
 
