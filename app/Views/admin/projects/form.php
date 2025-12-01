@@ -6,43 +6,47 @@
 <?php $selectedStack = stack_decode($formData['tech_stack'] ?? old('tech_stack') ?? ($project['tech_stack'] ?? null)); ?>
 <?php $currentVisibility = $formData['visibility'] ?? old('visibility') ?? ($project['visibility'] ?? 'public'); ?>
 <?php $currentGithub = $formData['github_url'] ?? old('github_url') ?? ($project['github_url'] ?? ''); ?>
-<div class="w-full max-w-2xl">
-    <div class="brutal-card p-6 bg-white space-y-4">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-xs uppercase tracking-widest font-bold text-[var(--color-stroke)]">Projects</p>
-                <h3 class="text-2xl font-extrabold leading-tight"><?= $isEdit ? 'Edit Project' : 'Create Project' ?></h3>
-            </div>
-            <span class="brutal-pill">Modal Form</span>
-        </div>
 
-        <?php if (! empty($errors)): ?>
-            <div class="brutal-card bg-[var(--color-highlight)]/50 text-[var(--color-stroke)] p-4">
-                <p class="font-extrabold mb-2">Please check the fields below:</p>
-                <ul class="list-disc space-y-1 pl-5 text-sm">
-                    <?php foreach ($errors as $message): ?>
-                        <li><?= esc($message) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
-        <form
-            method="post"
-            enctype="multipart/form-data"
-            action="<?= $isEdit ? '/admin/projects/update/'.$project['id'] : '/admin/projects/store' ?>"
-            data-ajax-target="#admin-projects-list"
-            class="space-y-4"
-            data-project-form
-        >
-        <?= csrf_field() ?>
+<?= view('partials/admin_modal_form', [
+    'contextLabel'   => 'Projects',
+    'titleText'      => $isEdit ? 'Edit Project' : 'Create Project',
+    'errors'         => $errors,
+    'action'         => $isEdit ? '/admin/projects/update/'.$project['id'] : '/admin/projects/store',
+    'formAttributes' => [
+        'enctype'          => 'multipart/form-data',
+        'data-ajax-target' => '#admin-projects-list',
+        'class'            => 'space-y-4',
+        'data-project-form'=> '',
+    ],
+    'submitLabel'    => $isEdit ? 'Update' : 'Create',
+    'maxWidthClass'  => 'max-w-2xl',
+    'fields'         => function () use (
+        $formData,
+        $project,
+        $catalog,
+        $selectedStack,
+        $currentVisibility,
+        $currentGithub
+    ) { ?>
         <div class="space-y-1">
             <label class="block text-sm font-bold">Title</label>
-            <input type="text" name="title" value="<?= esc($formData['title'] ?? old('title') ?? ($project['title'] ?? '')) ?>" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" required>
+            <input
+                type="text"
+                name="title"
+                value="<?= esc($formData['title'] ?? old('title') ?? ($project['title'] ?? '')) ?>"
+                class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal"
+                required
+            >
         </div>
         <div class="space-y-1">
             <label class="block text-sm font-bold">Slug</label>
-            <input type="text" name="slug" value="<?= esc($formData['slug'] ?? old('slug') ?? ($project['slug'] ?? '')) ?>" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" required>
+            <input
+                type="text"
+                name="slug"
+                value="<?= esc($formData['slug'] ?? old('slug') ?? ($project['slug'] ?? '')) ?>"
+                class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal"
+                required
+            >
         </div>
         <div class="space-y-2">
             <label class="block text-sm font-bold">Visibility</label>
@@ -65,12 +69,23 @@
         </div>
         <div class="space-y-1">
             <label class="block text-sm font-bold">GitHub URL</label>
-            <input type="url" name="github_url" value="<?= esc($currentGithub) ?>" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" placeholder="https://github.com/username/repo" <?= $currentVisibility === 'public' ? 'required' : '' ?>>
+            <input
+                type="url"
+                name="github_url"
+                value="<?= esc($currentGithub) ?>"
+                class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal"
+                placeholder="https://github.com/username/repo"
+                <?= $currentVisibility === 'public' ? 'required' : '' ?>
+            >
             <p class="text-xs text-gray-600">Wajib diisi ketika visibility Public.</p>
         </div>
         <div class="space-y-1">
             <label class="block text-sm font-bold">Description</label>
-            <textarea name="description" class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal" rows="6"><?= esc($formData['description'] ?? old('description') ?? ($project['description'] ?? '')) ?></textarea>
+            <textarea
+                name="description"
+                class="w-full p-3 border-2 border-[var(--color-stroke)] rounded-brutal focus-brutal"
+                rows="6"
+            ><?= esc($formData['description'] ?? old('description') ?? ($project['description'] ?? '')) ?></textarea>
         </div>
         <div class="space-y-3" data-stack-field>
             <div class="flex items-center justify-between gap-3 flex-wrap">
@@ -155,11 +170,5 @@
                 <?= view('admin/projects/images_fragment', ['project' => $project]) ?>
             </div>
         <?php endif ?>
-
-            <div class="flex items-center space-x-3">
-                <button type="submit" class="brutal-button px-4 py-2 bg-[var(--color-accent)] text-[var(--color-stroke)]"><?= $isEdit ? 'Update' : 'Create' ?></button>
-                <button type="button" class="brutal-button px-4 py-2 bg-white" data-modal-close>Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <?php },
+]) ?>
